@@ -1,0 +1,6 @@
+2.	A txt file describing:
+a.	how long it takes to finish 4 queries
+b.	retrieval result of 4 queries
+c.	a paragraph on how to tune µ, and its effect on the query results.
+
+Language used: Python (3.9.7)

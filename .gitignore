@@ -1,0 +1,9 @@
+# trash
+.DS_Store
+
+__pycache__
+venv
+
+# big data
+*.trectext
+*.trecweb
