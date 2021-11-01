@@ -60,3 +60,9 @@ class MyIndexReader:
     def getDocLength(self, docId):
         words = self.searcher.stored_fields(docId)["doc_content"].split(" ")
         return len(words)
+
+    def get_docs_by_tokens(self, tokens: list[str]):
+        terms = [Term("doc_content", token) for token in tokens]
+        results = self.searcher.search(Or(terms))
+        
+        return results
