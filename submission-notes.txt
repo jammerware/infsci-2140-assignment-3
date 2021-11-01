@@ -1,3 +1,4 @@
+1.	src folder, which contain all your codes. 
 2.	A txt file describing:
 a.	how long it takes to finish 4 queries
 b.	retrieval result of 4 queries

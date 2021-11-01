@@ -7,3 +7,5 @@ venv
 # big data
 *.trectext
 *.trecweb
+indextext
+indexweb
