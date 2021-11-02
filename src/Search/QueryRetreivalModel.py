@@ -14,7 +14,7 @@ class QueryRetrievalModel:
         self.mu = 530
         print('estimated mu at', self.mu)
 
-    def get_smoothed_prior(self, docNo, token, doc_length, postings, collection_frequency, term_probability, mu):
+    def get_smoothed_prior(self, docNo, doc_length, postings, term_probability, mu):
         count_in_doc = 0 if docNo not in postings else postings[docNo]
         
         numerator = count_in_doc + (mu * term_probability)
@@ -27,9 +27,7 @@ class QueryRetrievalModel:
     # The returned results (retrieved documents) should be ranked by the score (from the most relevant to the least).
     # You will find our IndexingLucene.Myindexreader provides method: docLength().
     # Returned documents should be a list of Document.
-    def retrieveQuery(self, query: Query, topN, smoothing='dirichlet'):
-        # remove any terms in the query that don't appear in the lexicon
-        lexicon = self.indexReader.reader.lexicon
+    def retrieveQuery(self, query: Query, topN, smoothing='dirichlet'):        
         query_content = []
         for token in query.queryContent:
             if self.indexReader.contains_token(token):
@@ -41,14 +39,12 @@ class QueryRetrievalModel:
         # for each term in each doc, compute the smoothed prior probability of each 
         results = []
 
-        # pre-cache posting lists and collection frequencies for speed
+        # pre-cache posting lists and term probabilities for speed
         postings = {}
-        collection_frequencies = {}
         term_probabilities = {}
 
         for token in query.queryContent:
             postings[token] = self.indexReader.getPostingList(token)
-            collection_frequencies[token] = self.indexReader.CollectionFreq(token)
             term_probabilities[token] = self.indexReader.get_token_probability(token)
 
         # iterate through docs and score each for each term
@@ -58,7 +54,7 @@ class QueryRetrievalModel:
             doc_length = self.indexReader.getDocLength(doc.docnum)
 
             for token in query_content:
-                score += self.get_smoothed_prior(doc.docnum, token, doc_length, postings[token], collection_frequencies[token], term_probabilities[token], self.mu)
+                score += self.get_smoothed_prior(doc.docnum, doc_length, postings[token], term_probabilities[token], self.mu)
 
             results.append({
                 'docId': doc.docnum,
