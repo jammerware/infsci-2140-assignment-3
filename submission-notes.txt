@@ -1,7 +1,17 @@
-1.	src folder, which contain all your codes. 
-2.	A txt file describing:
-a.	how long it takes to finish 4 queries
-b.	retrieval result of 4 queries
-c.	a paragraph on how to tune µ, and its effect on the query results.
+A. EXECUTION TIME
 
-Language used: Python (3.9.7)
+My code processes all four queries in about one minute but may vary based on hardware. Execution notes: Run HW3Main.py from the project root (e.g. python src/HW3Main.py). Requires nltk and whoosh. Assumes data is in data folder, with indices in data/indexweb and data/indextext.
+
+B. RETRIEVAL RESULT
+
+I want to be transparent that I think there may be problems in my implementation. As I worked on the assignment, I realized that I don't know how to manage the Dirichlet priors for multiple query terms. I summed them (so each document's score is a sum of the computed dirichlet prior probability of each query term), but I'm not sure that's correct. As I discuss below, I'm also not sure how to tune mu.
+
+C. DISCUSSION OF MU
+
+I don't feel able to comment on mu very intelligently, because how the parameter is tuned was not discussed much in class, and the paper linked from the assignment rubric is not available (I get a screen that says Download Limit Exceeded upon attempt to access). I Scholar'd the paper and found that they mention that starting with the average document length is a reasonable position to take, so I did that in my assignment. I then played with increasing and decreasing mu while evaluating the range in score from the most relevant result to the least (in the top 20).
+
+My final mu value is about 530, which I chose because it gave the greatest dynamic range between the most relevant result to the least.
+
+D. PLATFORM USED TO DO THE ASSIGNMENT
+
+I used Python 3.10.

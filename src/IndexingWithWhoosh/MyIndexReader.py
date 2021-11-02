@@ -17,7 +17,11 @@ class MyIndexReader:
         path_dir = Path.IndexWebDir
         if type == "trectext":
             path_dir = Path.IndexTextDir
-        self.searcher = index.open_dir(path_dir).searcher()
+
+        self.index = index.open_dir(path_dir)
+        self.searcher = self.index.searcher()
+        self.reader = self.index.reader()
+        self.all_terms = list(self.reader.field_terms('doc_content'))
 
     # Return the integer DocumentID of input string DocumentNo.
     def getDocId(self, docNo):
@@ -29,19 +33,11 @@ class MyIndexReader:
 
     # Return DF.
     def DocFreq(self, token):
-        results = self.searcher.search(Term("doc_content", token))
-        return len(results)
-
+        return self.reader.doc_frequency('doc_content', token)
+        
     # Return the frequency of the token in whole collection/corpus.
     def CollectionFreq(self, token):
-        results = self.searcher.search(Term("doc_content", token), limit=None)
-        count = 0
-        for result in results:
-            words = self.searcher.stored_fields(result.docnum)["doc_content"].split(" ")
-            for word in words:
-                if word == token:
-                    count += 1
-        return count
+        return self.reader.frequency('doc_content', token)
 
     # Return posting list in form of {documentID:frequency}.
     def getPostingList(self, token):
@@ -58,11 +54,22 @@ class MyIndexReader:
 
     # Return the length of the requested document.
     def getDocLength(self, docId):
-        words = self.searcher.stored_fields(docId)["doc_content"].split(" ")
-        return len(words)
+        return self.reader.doc_field_length(docId, 'doc_content')
 
     def get_docs_by_tokens(self, tokens: list[str]):
         terms = [Term("doc_content", token) for token in tokens]
-        results = self.searcher.search(Or(terms))
+        results = self.searcher.search(Or(terms), limit=None)
         
         return results
+
+    def get_token_probability(self, token):
+        return self.CollectionFreq(token) / self.index.field_length('doc_content')
+
+    def get_collection_length(self):
+        return self.index.field_length('doc_content')
+
+    def contains_token(self, token):
+        return token in self.all_terms
+
+    def total_doc_count(self):
+        return len(list(self.reader.all_doc_ids()))

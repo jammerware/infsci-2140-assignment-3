@@ -1,11 +1,10 @@
 class Document:
 
-    def __init__(self):
+    def __init__(self, docId, docNo, score):
+        self.docid = docId
+        self.docno = docNo
+        self.score = score
         return
-
-    docid = ""
-    docno = ""
-    score = 0.0
 
     def getDocId(self):
         return self.docid
